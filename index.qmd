@@ -765,9 +765,12 @@ Here are my presentation files.
 
 The following files are provided as part of this project:
 
--   **HTML version**: [View HTML report](Datafiles/presentation.file.html)\
--   **QMD source**: [Download QMD file](Datafiles/presentation.file.qmd)\
--   **PDF version**: [Download PDF report](Datafiles/presentation.file.pdf)
+[View HTML report](presentation.file.html)
+
+**PDF version**: [Download PDF](presentation.file.pdf) 
+
+**QMD source**: [Download QMD](presentation.file.qmd)
+
 
 Here is the handout's link:
 

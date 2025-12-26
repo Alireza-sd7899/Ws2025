@@ -1,0 +1,282 @@
+---
+title: "Data science"
+author: "Alireza Sadeghi"
+format: revealjs
+editor: visual
+bibliography: ref.bib 
+csl: harvard-cite-them-right.csl
+---
+
+# Table of contents
+
+Introduction
+
+Process
+
+Challenges
+
+on going problem
+
+Conclusion
+
+References
+
+## Introduction
+
+In this project, I used RStudio to replicate a graph and an Excel table from the paper [@agranov2024bargaining] . The goal of this work was to demonstrate my ability to use R for data analysis, visualization, and data handling.
+
+To complete the replication, I worked with three main R packages: tidyverse[@tidyverse], ggplot2,[@ggplot2] and readxl [@readxl] The *tidyverse* package was essential for organizing and cleaning the data, making it easier to process and analyse.
+
+# 
+
+The *ggplot2* [@ggplot2] was used to recreate the graph, providing a clear and professional visualization. The *readxl* package [@readxl] was applied to import and handle the Excel data efficiently within RStudio.
+
+## 
+
+Finally, the *readxl* package [@readxl] enabled me to import data directly from Excel files into R, which is a common and practical skill for real-world data projects.
+
+By successfully reproducing the table and the graph, I demonstrated my ability to use R effectively for both data management and visualization tasks . This process also enhanced my understanding of how R can be applied to replicate results from published research, an essential aspect of ensuring reliable and transparent data analysis [@agranov2024bargaining]
+
+## Running Codes
+
+This R script was developed to replicate two figures a stacked horizontal bar chart and a grouped bar chart using data sourced from an Excel file. The aim of this work was to demonstrate how R can be used for effective data cleaning, manipulation, and visualization [@lüdecke2021].
+
+The script begins by setting the working directory and loading three essential packages: *tidyverse* for data wrangling and plotting [@tidyverse], *readxl* for importing Excel files [@readxl], and *scales* for formatting numerical values such as percentages.
+
+# 
+
+The dataset is imported from two separate sheets within the same Excel workbook, with each sheet providing data for one of the figures.
+
+For the first figure, the data is prepared by removing unnecessary columns and reshaping it into a long format suitable for visualization in *ggplot2* [@ggplot2].
+
+A stacked horizontal bar chart is then created with ggplot2 [@ggplot2], showing the proportion of categories across experimental conditions. The chart includes percentage labels, color coding, and a clear title to make the results easy to interpret.
+
+# 
+
+The second figure uses a similar process: the data is read, reshaped, and slightly cleaned before being plotted as a grouped bar chart. This graph compares multiple metrics under different conditions, with values displayed above each bar for clarity.
+
+## 
+
+Overall, the script demonstrates how to combine Excel data with R’s visualization tools to produce clear, well-structured, and professional graphs. It highlights the usefulness of the *ggplot2* [@ggplot2], *tidyverse* [@tidyverse], and *readxl* [@readxl] packages in performing data analysis and creating reproducible results, which are essential components of transparent and reliable research. [@agranov2024bargaining]
+
+## 
+
+```{r, echo=TRUE}
+# -----------------------------
+# R SCRIPT: GRAPHS FROM EXCEL
+# -----------------------------
+
+# Set working directory
+setwd("E:/My education/UNI/edu uni/Semester 2/Data science for Business")
+
+# Load libraries
+library(tidyverse)
+library(readxl)
+library(scales)
+
+# File path
+file_path <- "E:/My education/UNI/edu uni/Semester 2/Data science for Business/figures.xlsx"
+
+# -----------------------------
+# FIGURE 1: Stacked Horizontal Bar Chart (Proportions)
+# -----------------------------
+
+# Read data from first sheet
+df1 <- read_excel(file_path, sheet = 1, skip = 1, col_names = FALSE)
+colnames(df1) <- c("Category", "M48", "U48", "DROP", "M96", "U96")
+
+# Clean and reshape data
+df1_clean <- df1 %>%
+  select(-DROP) %>%
+  pivot_longer(cols = c(M48, U48, M96, U96),
+               names_to = "Condition",
+               values_to = "Proportion") %>%
+  mutate(Proportion = as.numeric(Proportion))
+
+# Plot
+plot1 <- ggplot(df1_clean, aes(x = Condition, y = Proportion, fill = Category)) +
+  geom_col(position = "stack", width = 0.7) +
+  geom_text(aes(label = scales::percent(Proportion, accuracy = 1)),
+            position = position_stack(vjust = 0.5), size = 4, color = "white") +
+  scale_fill_brewer(palette = "Spectral") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Figure 1: Proportion of Categories by Condition",
+       x = "Experimental Condition",
+       y = "Proportion",
+       fill = "Category") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        legend.position = "bottom") +
+  coord_flip()  # horizontal bars
+
+# Print Figure 1
+print(plot1)
+
+# -----------------------------
+# FIGURE 2: Grouped Bar Chart (Metrics)
+# -----------------------------
+
+# Read data from second sheet
+df2 <- read_excel(file_path, sheet = 2, skip = 1, col_names = FALSE)
+colnames(df2) <- c("Metric", "M48", "U48", "M96", "U96")
+
+# Clean and reshape data
+df2_clean <- df2 %>%
+  pivot_longer(cols = c(M48, U48, M96, U96),
+               names_to = "Condition",
+               values_to = "Value") %>%
+  mutate(Value = as.numeric(Value)) %>%
+  mutate(Metric = gsub("Frac of ", "", Metric))
+
+# Plot
+plot2 <- ggplot(df2_clean, aes(x = Condition, y = Value, fill = Metric)) +
+  geom_col(position = position_dodge(width = 0.8), width = 0.8) +
+  geom_text(aes(label = round(Value, 3)),
+            position = position_dodge(width = 0.8),
+            vjust = -0.5,
+            size = 4) +
+  scale_fill_brewer(palette = "Dark2") +
+  scale_y_continuous(limits = c(0, max(df2_clean$Value, na.rm = TRUE) * 1.1)) +
+  labs(title = "Figure 2: Comparison of Metrics by Condition",
+       x = "Experimental Condition",
+       y = "Fraction Value",
+       fill = "Metric") +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"),
+        legend.position = "bottom",
+        axis.text.x = element_text(angle = 45, hjust = 1))  # rotate x labels
+
+# Print Figure 2
+print(plot2)
+```
+
+## 
+
+![](images/clipboard-1934711603.jpeg)
+
+## 
+
+![](images/clipboard-528352448.png)
+
+# Process
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(scales)
+
+file_path <- "E:/My education/UNI/edu uni/Semester 2/Data science for Business/figures.xlsx"
+
+# -----------------------------
+# DATA CLEANING
+# -----------------------------
+df2 <- read_excel(file_path, sheet = 2, skip = 1, col_names = FALSE)
+colnames(df2) <- c("Metric", "M48", "U48", "M96", "U96")
+
+df2_clean <- df2 %>%
+  pivot_longer(cols = c(M48, U48, M96, U96),
+               names_to = "Condition",
+               values_to = "Value") %>%
+  mutate(Value = as.numeric(Value)) %>%
+  mutate(Metric = gsub("Frac of ", "", Metric))
+
+# -----------------------------
+# LOLLIPOP CHART
+# -----------------------------
+plot2_lollipop <- ggplot(df2_clean, aes(x = Condition, y = Value, color = Metric)) +
+  geom_segment(aes(xend = Condition, y = 0, yend = Value), size = 1) +
+  geom_point(size = 5) +
+  geom_text(aes(label = round(Value, 3)), vjust = -0.7, size = 4) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = "Figure 2B: Lollipop Chart of Metrics by Condition",
+    x = "Experimental Condition",
+    y = "Fraction Value",
+    color = "Metric"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+print(plot2_lollipop)
+                   
+```
+
+# 
+
+```{r, echo=TRUE}
+library(tidyverse)
+library(readxl)
+library(scales)
+
+file_path <- "E:/My education/UNI/edu uni/Semester 2/Data science for Business/figures.xlsx"
+
+# -----------------------------
+# DATA CLEANING
+# -----------------------------
+df2 <- read_excel(file_path, sheet = 2, skip = 1, col_names = FALSE)
+colnames(df2) <- c("Metric", "M48", "U48", "M96", "U96")
+
+df2_clean <- df2 %>%
+  pivot_longer(cols = c(M48, U48, M96, U96),
+               names_to = "Condition",
+               values_to = "Value") %>%
+  mutate(Value = as.numeric(Value)) %>%
+  mutate(Metric = gsub("Frac of ", "", Metric))
+
+# -----------------------------
+# LOLLIPOP CHART
+# -----------------------------
+plot2_lollipop <- ggplot(df2_clean, aes(x = Condition, y = Value, color = Metric)) +
+  geom_segment(aes(xend = Condition, y = 0, yend = Value), size = 1) +
+  geom_point(size = 5) +
+  geom_text(aes(label = round(Value, 3)), vjust = -0.7, size = 4) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = "Figure 2B: Lollipop Chart of Metrics by Condition",
+    x = "Experimental Condition",
+    y = "Fraction Value",
+    color = "Metric"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+print(plot2_lollipop)
+                   
+```
+
+# Challenges
+
+During the replication process, I encountered several challenges related to data preparation, visualization, and project management. These obstacles not only tested my technical skills in RStudio but also helped me develop practical solutions for handling real-world data analysis workflows.
+
+**1. Data Cleaning and Preparation**\
+**2. Visualizing Graphs in the Presentation**\
+**3. GitHub Integration and File Size Limitations**
+
+**4. Displaying Code in the Presentation**\
+
+# On going problems
+
+When pushing my project to GitHub, I encountered challenges related to large image files generated from my R visualizations. Although I implemented a *.gitignore* file to prevent oversized files from being uploaded, this also resulted in the images not appearing in the GitHub repository or in the associated presentation materials. I attempted to address the issue by compressing and lowering the resolution of the plots using the *ggsave()* function in *ggplot2* [@ggplot2]; however, the problem persisted.
+
+# 
+
+At present, I am still exploring effective solutions that would allow me to maintain a clean and efficient repository while ensuring that graphical outputs are visible and accessible online [@lüdecke2021].
+
+# Conclusion
+
+Through this analysis, I successfully replicated and visualized the same dataset using multiple graphical techniques in R.\
+By experimenting with different visualization styles,including stacked and grouped bar charts, pie charts, lollipop charts, and heatmaps,I demonstrated how the same data can tell different stories depending on how it’s presented.
+
+Each visualization offers unique insights:
+
+# 
+
+-   **Stacked and 100% bar charts** highlight composition and relative proportions.
+
+-   **Grouped and faceted charts** make direct comparisons clearer.
+
+-   **Pie charts and heatmaps** provide visually engaging summaries for presentations.
+
+Overall, this exercise shows the flexibility of R for data visualization and emphasizes the importance of choosing the right graph type to effectively communicate key insights.
+
+# References
